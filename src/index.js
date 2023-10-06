@@ -9,6 +9,10 @@ gameboard.createGameboard();
 gameboard.placeMines();
 gameboard.calculateAdjacentMines();
 
-//gameboard.uncoverCell(3, 5);
+
+gameboard.revealTile(4,5);
+gameboard.revealTile(0,2);
+gameboard.revealTile(2,7);
+
 
 console.log(gameboard);

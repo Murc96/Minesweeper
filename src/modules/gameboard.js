@@ -1,4 +1,5 @@
 "use strict";
+import { createTileDivs } from "./functions";
 
 class Gameboard {
   constructor(player) {
@@ -30,8 +31,10 @@ class Gameboard {
           mine: false,
           hidden: true,
           adjacentMines: 0,
+          marked: false,
         }
         innerArray.push(tile);
+        createTileDivs(x, y, tile.hidden, rows);
       }
       this.board.push(innerArray);
     }
@@ -81,7 +84,7 @@ class Gameboard {
       }
     }
   }
-  
+
   countAdjacentMines(row, col) {
     let count = 0;
     for (let i = row - 1; i <= row + 1; i++) {
@@ -111,7 +114,60 @@ class Gameboard {
       }
     }
   }
-  
+
+  revealTile(row, col){
+    let tile = this.board[row][col];
+
+    if (tile.hidden){
+      tile.hidden = false;
+    }
+
+    this.checkGameStatus();
+  }
+
+  markTile(row, col) {
+    let tile = this.board[row][col];
+
+    if(!tile.marked && tile.hidden){
+      tile.marked = true;
+    }
+  }
+
+  checkGameStatus() {
+    let won = true;
+    let lost = false;
+
+    for (let row = 0; row < this.board.length; row++) {
+      for (let col = 0; col < this.board[row].length; col++) {
+        const tile = this.board[row][col];
+
+        // Wenn ein Feld ohne Mine noch verdeckt ist hat der Spieler nicht gewonnen
+        if (!tile.mine && tile.hidden) {
+          won = false;
+        }
+
+        // Wenn eine Mine gefunden wird und sie nicht mehr verdeckt ist, hat der Spieler verloren
+        if (tile.mine && !tile.hidden) {
+          lost = true;
+          break;
+        }
+      }
+
+      if (lost) {
+        break;
+      }
+    }
+
+    if (won) {
+      console.log ("gewonnen");
+    } else if (lost) {
+      console.log ("verloren");
+    } else {
+      console.log ("weiter");
+    }
+  }
+
+
 }
 
 export { Gameboard };
