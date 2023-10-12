@@ -34,7 +34,6 @@ class Gameboard {
           marked: false,
         }
         innerArray.push(tile);
-        createTileDivs(x, y, tile.hidden, rows);
       }
       this.board.push(innerArray);
     }
@@ -148,6 +147,7 @@ class Gameboard {
 
         // Wenn eine Mine gefunden wird und sie nicht mehr verdeckt ist, hat der Spieler verloren
         if (tile.mine && !tile.hidden) {
+          won = false;
           lost = true;
           break;
         }

@@ -37,19 +37,23 @@ h1 {
   user-select: none;
 }
 
-#board > [data-hidden ="true"] {
+#board > [data-hidden = "true"] {
   background-color: #BBB;
   cursor: pointer;
 }
 
-#board > [data-status="mine"] {
+#board > [data-hidden = "mine"] {
   background-color: red;
 }
 
-#board > [data-status="number"] {
+#board > [data-hidden = "false"] {
   background-color: none;
 }
 
-#board > [data-status="marked"] {
+#board > [data-hidden="marked"] {
   background-color: yellow;
+}
+
+.tile {
+  font-size: 15px;
 }
