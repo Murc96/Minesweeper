@@ -66,10 +66,10 @@ class Gameboard {
       if (this.board[x][y].mine === false) {
         this.board[x][y].mine = true;
       } else if (this.board[x][y].mine === true) {
-        // Look for a spot that doesn't have a mine
+        // Eine Stelle suchen die keine Mine beinhaltet
         let found = false;
-        for (let row = 0; row < rows; row++) {
-          for (let col = 0; col < cols; col++) {
+        for (let row = x; row < rows; row++) {
+          for (let col = y; col < cols; col++) {
             if (this.board[row][col].mine !== true) {
               this.board[row][col].mine = true;
               found = true;
