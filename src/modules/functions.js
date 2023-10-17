@@ -9,6 +9,12 @@ export function createTileDivs(x, y, status, size, gameboard) {
     boardElement.style.setProperty('--size', size);
     boardElement.appendChild(tileDiv);
 
+    addRightClick(tileDiv,gameboard);
+
+    addLeftClick(tileDiv,gameboard);
+}
+
+function addRightClick(tileDiv,gameboard) {
     tileDiv.addEventListener("contextmenu", function(event) {
         event.preventDefault(); // Prevent the default context menu from appearing on right-click
         const [clickedX, clickedY] = this.id.split("-").slice(1).map(Number);
@@ -16,9 +22,9 @@ export function createTileDivs(x, y, status, size, gameboard) {
         this.dataset.hidden = "marked";
         console.log(gameboard);
     });
+}
 
-    
-    // Add click event listener to the tile
+function addLeftClick(tileDiv,gameboard) {
     tileDiv.addEventListener("click", function () {
         
         const [clickedX, clickedY] = this.id.split("-").slice(1).map(Number);
@@ -33,6 +39,6 @@ export function createTileDivs(x, y, status, size, gameboard) {
         } else if (gameboard.board[clickedX][clickedY].mine) {
             this.dataset.hidden = "mine";
         }
-
     });
 }
+
