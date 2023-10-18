@@ -1,30 +1,39 @@
 "use strict";
-import { createTileDivs } from "./functions";
+import { createTileDivs, createModal } from "./functions";
 
 class Gameboard {
   constructor(player) {
     this.board = [];
     this.difficulty = player.difficulty;
+    this.rows = 0;
+    this.cols = 0;
+    this.mines = 0;
+  }
+
+  getDifficulty() {
+
+    if (this.difficulty === "beginner") {
+      this.rows = 8;
+      this.cols = 8;
+      this.mines = 10;
+    } else if (this.difficulty === "intermediate") {
+      this.rows = 16;
+      this.cols = 16;
+      this.mines = 40;
+    } else if (this.difficulty === "advanced") {
+      this.rows = 16;
+      this.cols = 30;
+      this.mines = 99;
+    }
   }
 
   createGameboard() {
-    let rows;
-    let cols;
 
-    if (this.difficulty === "beginner") {
-      rows = 8;
-      cols = 8;
-    } else if (this.difficulty === "intermediate") {
-      rows = 16;
-      cols = 16;
-    } else if (this.difficulty === "advanced") {
-      rows = 16;
-      cols = 30;
-    }
+    this.getDifficulty();
 
-    for (let x = 0; x < rows; x++) {
+    for (let x = 0; x < this.rows; x++) {
       let innerArray = [];
-      for (let y = 0; y < cols; y++) {
+      for (let y = 0; y < this.cols; y++) {
         const tile = {
           x,
           y,
@@ -40,36 +49,18 @@ class Gameboard {
   }
 
   placeMines() {
-    let mines;
-    let rows;
-    let cols;
 
-    if (this.difficulty === "beginner") {
-      mines = 10;
-      rows = 8;
-      cols = 8;
-    } else if (this.difficulty === "intermediate") {
-      mines = 40;
-      rows = 16;
-      cols = 16;
-    } else if (this.difficulty === "advanced") {
-      mines = 99;
-      rows = 16;
-      cols = 30;
-    }
-
-
-    for (let i = 0; i < mines; i++) {
-      let x = parseInt(Math.random() * rows);
-      let y = parseInt(Math.random() * cols);
+    for (let i = 0; i < this.mines; i++) {
+      let x = parseInt(Math.random() * this.rows);
+      let y = parseInt(Math.random() * this.cols);
 
       if (this.board[x][y].mine === false) {
         this.board[x][y].mine = true;
       } else if (this.board[x][y].mine === true) {
         // Eine Stelle suchen die keine Mine beinhaltet
         let found = false;
-        for (let row = x; row < rows; row++) {
-          for (let col = y; col < cols; col++) {
+        for (let row = x; row < this.rows; row++) {
+          for (let col = y; col < this.cols; col++) {
             if (this.board[row][col].mine !== true) {
               this.board[row][col].mine = true;
               found = true;
@@ -121,74 +112,76 @@ class Gameboard {
       tile.hidden = false;
 
       if (tile.adjacentMines === 0) {
-        this.revealMultiple(row,col);
+        this.revealMultiple(row, col);
       }
     }
 
     this.checkGameStatus();
   }
-  
-revealMultiple(row,col) {
-  for (let i = row - 1; i <= row + 1; i++) {
-    for (let j = col - 1; j <= col + 1; j++) {
-      // Check if the position is within the board boundaries
-      if (i >= 0 && i < this.board.length && j >= 0 && j < this.board[i].length) {
-        // Recursively reveal adjacent tiles without adjacent mines
-        if (this.board[i][j].adjacentMines === 0 && this.board[i][j].hidden) {
-          this.revealTile(i, j);
-          document.getElementById(`tile-${i}-${j}`).dataset.hidden = "false";
-        } else if (this.board[i][j].adjacentMines > 0 && this.board[i][j].hidden) {
-          this.board[i][j].hidden = false;
-          document.getElementById(`tile-${i}-${j}`).dataset.hidden = "false";
-          document.getElementById(`tile-${i}-${j}`).textContent = this.board[i][j].adjacentMines
+
+  revealMultiple(row, col) {
+    for (let i = row - 1; i <= row + 1; i++) {
+      for (let j = col - 1; j <= col + 1; j++) {
+        // Check if the position is within the board boundaries
+        if (i >= 0 && i < this.board.length && j >= 0 && j < this.board[i].length) {
+          // Recursively reveal adjacent tiles without adjacent mines
+          if (this.board[i][j].adjacentMines === 0 && this.board[i][j].hidden) {
+            this.revealTile(i, j);
+            document.getElementById(`tile-${i}-${j}`).dataset.hidden = "false";
+          } else if (this.board[i][j].adjacentMines > 0 && this.board[i][j].hidden) {
+            this.board[i][j].hidden = false;
+            document.getElementById(`tile-${i}-${j}`).dataset.hidden = "false";
+            document.getElementById(`tile-${i}-${j}`).textContent = this.board[i][j].adjacentMines
+          }
         }
       }
     }
   }
-}
 
-markTile(row, col) {
-  let tile = this.board[row][col];
+  markTile(row, col) {
+    let tile = this.board[row][col];
 
-  if (!tile.marked && tile.hidden) {
-    tile.marked = true;
+    if (!tile.marked && tile.hidden) {
+      tile.marked = true;
+    }
   }
-}
 
-checkGameStatus() {
-  let won = true;
-  let lost = false;
+  checkGameStatus() {
+    let won = true;
+    let lost = false;
 
-  for (let row = 0; row < this.board.length; row++) {
-    for (let col = 0; col < this.board[row].length; col++) {
-      const tile = this.board[row][col];
+    for (let row = 0; row < this.board.length; row++) {
+      for (let col = 0; col < this.board[row].length; col++) {
+        const tile = this.board[row][col];
 
-      // Wenn ein Feld ohne Mine noch verdeckt ist hat der Spieler nicht gewonnen
-      if (!tile.mine && tile.hidden) {
-        won = false;
+        // Wenn ein Feld ohne Mine noch verdeckt ist hat der Spieler nicht gewonnen
+        if (!tile.mine && tile.hidden) {
+          won = false;
+        }
+
+        // Wenn eine Mine gefunden wird und sie nicht mehr verdeckt ist, hat der Spieler verloren
+        if (tile.mine && !tile.hidden) {
+          won = false;
+          lost = true;
+          break;
+        }
       }
 
-      // Wenn eine Mine gefunden wird und sie nicht mehr verdeckt ist, hat der Spieler verloren
-      if (tile.mine && !tile.hidden) {
-        won = false;
-        lost = true;
+      if (lost) {
         break;
       }
     }
 
-    if (lost) {
-      break;
+    if (won) {
+      console.log("gewonnen");
+      createModal(won, lost);
+    } else if (lost) {
+      console.log("verloren");
+      createModal(won, lost);
+    } else {
+      console.log("weiter");
     }
   }
-
-  if (won) {
-    console.log("gewonnen");
-  } else if (lost) {
-    console.log("verloren");
-  } else {
-    console.log("weiter");
-  }
-}
 
 
 }
