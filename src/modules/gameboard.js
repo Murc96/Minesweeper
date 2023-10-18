@@ -174,10 +174,8 @@ class Gameboard {
 
     if (won) {
       console.log("gewonnen");
-      createModal(won, lost);
     } else if (lost) {
       console.log("verloren");
-      createModal(won, lost);
     } else {
       console.log("weiter");
     }
